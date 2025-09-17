@@ -104,7 +104,7 @@ async def log_step_metrics(
             duration=duration,
             success=success,
             error_message=error_message,
-            metadata=metadata or {}
+            step_metadata=metadata or {}
         )
         session.add(metric)
         await session.commit()

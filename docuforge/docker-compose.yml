@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api:
     build: .
@@ -11,9 +9,8 @@ services:
       - STORAGE_ENDPOINT=minio:9000
       - QDRANT_URL=http://qdrant:6333
       - INNGEST_EVENT_KEY=${INNGEST_EVENT_KEY:-test-event-key}
-      - INNGEST_SIGNING_KEY=${INNGEST_SIGNING_KEY:-test-signing-key}
       - INNGEST_BASE_URL=http://inngest:8288
-      - INNGEST_DEV=true
+      - INNGEST_DEV=1
       - DEBUG=true
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
@@ -28,11 +25,12 @@ services:
     restart: unless-stopped
 
   inngest:
-    image: inngest/inngest:latest
+    image: inngest/inngest:v0.27.0
+    command: 'inngest dev -u http://api:8000/api/inngest'
     ports:
       - "8288:8288"
     environment:
-      - INNGEST_DEV=true
+      - INNGEST_DEV=1
       - INNGEST_LOG_LEVEL=info
     restart: unless-stopped
 

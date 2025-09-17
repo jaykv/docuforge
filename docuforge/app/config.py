@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     
     # Inngest
     INNGEST_EVENT_KEY: str = "test-event-key"
-    INNGEST_SIGNING_KEY: str = "test-signing-key"
+    INNGEST_SIGNING_KEY: Optional[str] = None
     INNGEST_BASE_URL: str = "http://localhost:8288"
     INNGEST_DEV: bool = True
     

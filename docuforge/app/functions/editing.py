@@ -3,7 +3,7 @@ Document editing functions.
 """
 
 from typing import Dict, Any
-from inngest import Context
+import inngest
 from ..functions import inngest_client
 from ..functions.extraction import load_processed_document
 import structlog
@@ -13,10 +13,9 @@ logger = structlog.get_logger()
 
 @inngest_client.create_function(
     fn_id="edit-document",
-    trigger=inngest_client.trigger.event(event="edit.requested"),
-    retries=2
+    trigger=inngest.TriggerEvent(event="edit.requested"),
 )
-async def edit_document(ctx: Context) -> Dict[str, Any]:
+async def edit_document(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Edit document with form filling and modifications."""
     job_id = ctx.event.data["job_id"]
     edit_instructions = ctx.event.data.get("edit_instructions", {})

@@ -3,15 +3,12 @@ Inngest functions for document processing workflows.
 """
 
 from inngest import Inngest
-from inngest.fast_api import serve
+
 from ..config import settings
 
 # Initialize Inngest client
 inngest_client = Inngest(
     app_id="docuforge",
-    event_key=settings.INNGEST_EVENT_KEY,
-    signing_key=settings.INNGEST_SIGNING_KEY,
-    base_url=settings.INNGEST_BASE_URL,
     is_production=not settings.INNGEST_DEV
 )
 
@@ -36,6 +33,4 @@ FUNCTIONS = [
 ]
 
 
-def serve_inngest():
-    """Create Inngest serve instance."""
-    return serve(inngest_client, FUNCTIONS)
+

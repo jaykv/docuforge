@@ -11,7 +11,7 @@ import time
 
 from .config import settings
 from .api import documents, jobs, webhooks
-from .functions import serve_inngest
+
 from .core.database import init_database, close_database
 from .core.storage import init_storage
 from .utils.monitoring import setup_logging
@@ -50,7 +50,9 @@ app.include_router(jobs.router, prefix=settings.API_PREFIX, tags=["jobs"])
 app.include_router(webhooks.router, prefix=settings.API_PREFIX, tags=["webhooks"])
 
 # Mount Inngest functions
-app.mount("/api/inngest", serve_inngest())
+from .functions import inngest_client, FUNCTIONS
+import inngest.fast_api
+inngest.fast_api.serve(app, inngest_client, FUNCTIONS)
 
 
 @app.on_event("startup")

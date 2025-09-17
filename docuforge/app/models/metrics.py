@@ -19,7 +19,7 @@ class ProcessingMetrics(Base):
     duration = Column(Float, nullable=False)  # seconds
     success = Column(Boolean, nullable=False)
     error_message = Column(Text, nullable=True)
-    metadata = Column(JSON, default={})
+    step_metadata = Column(JSON, default={})
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     
     def __repr__(self):

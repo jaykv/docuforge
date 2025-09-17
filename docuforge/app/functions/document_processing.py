@@ -5,7 +5,7 @@ Main document processing pipeline using Inngest.
 import tempfile
 import time
 from typing import Dict, Any
-from inngest import Context
+import inngest
 from ..functions import inngest_client
 from ..core.database import update_job_status, get_db_session
 from ..models.metrics import ProcessingMetrics
@@ -27,12 +27,10 @@ logger = structlog.get_logger()
 
 @inngest_client.create_function(
     fn_id="document-processing-pipeline",
-    trigger=inngest_client.trigger.event(event="document.uploaded"),
-    retries=3,
-    concurrency=10
+    trigger=inngest.TriggerEvent(event="document.uploaded"),
 )
 @monitor_function_execution
-async def process_document(ctx: Context) -> Dict[str, Any]:
+async def process_document(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Main document processing pipeline."""
     document_url = ctx.event.data["document_url"]
     job_id = ctx.event.data["job_id"]
@@ -129,10 +127,9 @@ async def process_document(ctx: Context) -> Dict[str, Any]:
 
 @inngest_client.create_function(
     fn_id="parallel-ocr-processing",
-    trigger=inngest_client.trigger.event(event="ocr.parallel"),
-    retries=2
+    trigger=inngest.TriggerEvent(event="ocr.parallel"),
 )
-async def parallel_ocr_processing(ctx: Context) -> Dict[str, Any]:
+async def parallel_ocr_processing(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Parallel OCR processing with multiple engines."""
     document_path = ctx.event.data["document_path"]
     layout_info = ctx.event.data["layout_info"]
@@ -149,10 +146,9 @@ async def parallel_ocr_processing(ctx: Context) -> Dict[str, Any]:
 
 @inngest_client.create_function(
     fn_id="agentic-correction",
-    trigger=inngest_client.trigger.event(event="correction.agentic"),
-    retries=2
+    trigger=inngest.TriggerEvent(event="correction.agentic"),
 )
-async def agentic_correction(ctx: Context) -> Dict[str, Any]:
+async def agentic_correction(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Agentic error correction using AI models."""
     ocr_result = ctx.event.data["ocr_result"]
     options = ctx.event.data.get("options", {})

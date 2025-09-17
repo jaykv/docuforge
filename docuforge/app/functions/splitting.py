@@ -3,7 +3,7 @@ Document splitting functions.
 """
 
 from typing import Dict, Any, List
-from inngest import Context
+import inngest
 from ..functions import inngest_client
 from ..functions.extraction import load_processed_document
 import structlog
@@ -13,10 +13,9 @@ logger = structlog.get_logger()
 
 @inngest_client.create_function(
     fn_id="split-document",
-    trigger=inngest_client.trigger.event(event="split.requested"),
-    retries=2
+    trigger=inngest.TriggerEvent(event="split.requested"),
 )
-async def split_document(ctx: Context) -> Dict[str, Any]:
+async def split_document(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Split document into sections with table of contents."""
     job_id = ctx.event.data["job_id"]
     options = ctx.event.data.get("options", {})

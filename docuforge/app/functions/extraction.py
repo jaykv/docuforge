@@ -3,7 +3,7 @@ Structured data extraction functions.
 """
 
 from typing import Dict, Any
-from inngest import Context
+import inngest
 from ..functions import inngest_client
 from ..services.ai_service import extract_with_schema, generate_citations
 from ..core.database import get_db_session
@@ -14,10 +14,9 @@ logger = structlog.get_logger()
 
 @inngest_client.create_function(
     fn_id="extract-structured-data",
-    trigger=inngest_client.trigger.event(event="extract.requested"),
-    retries=2
+    trigger=inngest.TriggerEvent(event="extract.requested"),
 )
-async def extract_structured_data(ctx: Context) -> Dict[str, Any]:
+async def extract_structured_data(ctx: inngest.Context, step: inngest.Step) -> Dict[str, Any]:
     """Extract structured data using schemas and prompts."""
     job_id = ctx.event.data["job_id"]
     schema = ctx.event.data["schema"]
